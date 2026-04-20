@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚔️ HercuList</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// 🔒 ANTI-COPY PROTECTION - HercuList
+(function() {
+  'use strict';
+  
+  // Disable right-click
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  
+  // Disable keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+    if (e.keyCode === 123 || 
+        (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
+        (e.ctrlKey && e.keyCode === 85)) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+C, Ctrl+A, Ctrl+X, Ctrl+S
+    if (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 65 || e.keyCode === 88 || e.keyCode === 83)) {
+      e.preventDefault();
+      return false;
+    }
+  });
+  
+  // Disable drag and drop
+  document.addEventListener('dragstart', e => e.preventDefault());
+  
+  // Disable text selection on double/triple click
+  document.addEventListener('selectstart', e => e.preventDefault());
+  
+  // Clear console periodically
+  setInterval(() => {
+    console.clear();
+  }, 1000);
+  
+  // Detect DevTools
+  const devtools = /./;
+  devtools.toString = function() {
+    this.opened = true;
+  };
+  
+  setInterval(() => {
+    console.log(devtools);
+    if (devtools.opened) {
+      window.location.reload();
+    }
+    devtools.opened = false;
+  }, 1000);
+  
+  // Disable copy event
+  document.addEventListener('copy', e => {
+    e.preventDefault();
+    return false;
+  });
+  
+  // Disable cut event
+  document.addEventListener('cut', e => {
+    e.preventDefault();
+    return false;
+  });
+  
+  // Override console methods
+  if (window.console) {
+    const noop = () => {};
+    ['log', 'debug', 'info', 'warn', 'error', 'dir', 'dirxml', 'trace', 'profile'].forEach(method => {
+      window.console[method] = noop;
+    });
+  }
+  
+  // Disable view source
+  document.onkeydown = function(e) {
+    if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 117)) {
+      return false;
+    }
+  };
+  
+  // Watermark protection message
+  console.log('%c⚠️ PROTECTED CODE', 'color: red; font-size: 30px; font-weight: bold;');
+  console.log('%cयह code protected है। Copy करने की कोशिश न करें!', 'color: orange; font-size: 16px;');
+  
+})();
+</script>
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: #0e1520;
+    --surface2: #141e2e;
+    --border: #1e2d42;
+    --accent: #00d4ff;
+    --accent2: #ff4d6d;
+    --green: #00e5a0;
+    --gold: #ffd700;
+    --gold2: #ff8c00;
+    --purple: #b060ff;
+    --text: #c8d8e8;
+    --muted: #4a6080;
+    --white: #f0f8ff;
+  }
+
+  * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px;
+    background-image:
+      radial-gradient(ellipse at 10% 0%, rgba(0,212,255,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 100%, rgba(255,77,109,0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(176,96,255,0.03) 0%, transparent 70%);
+  }
+
+  .app { max-width: 900px; margin: 0 auto; }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 5px;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo span { color: var(--gold); }
+
+  .logo-wrap { display: flex; flex-direction: column; }
+
+  .logo-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: -4px;
+  }
+
+  .header-date {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    border-radius: 9px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .tab-btn.active {
+    background: var(--surface);
+    color: var(--white);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .tab-btn:hover:not(.active) { color: var(--text); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    top: 20px; right: 20px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 9999;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    max-width: 300px;
+  }
+  .toast.show { transform: translateX(0); }
+  .toast.success { background: rgba(0,229,160,0.15); border: 1px solid var(--green); color: var(--green); }
+  .toast.error { background: rgba(255,77,109,0.15); border: 1px solid var(--accent2); color: var(--accent2); }
+  .toast.badge { background: rgba(255,215,0,0.12); border: 1px solid var(--gold); color: var(--gold); font-size: 14px; max-width: 320px; }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .stat-val.accent { color: var(--accent); }
+  .stat-val.green { color: var(--green); }
+  .stat-val.gold { color: var(--gold); }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* TIMER CARD */
+  .timer-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .timer-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .timer-card.running::before { opacity: 1; animation: scanline 2s linear infinite; }
+
+  @keyframes scanline {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .timer-card.running {
+    border-color: rgba(0,212,255,0.3);
+    box-shadow: 0 0 30px rgba(0,212,255,0.08);
+  }
+
+  .timer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .status-pill.idle { background: rgba(74,96,128,0.2); color: var(--muted); border: 1px solid var(--border); }
+  .status-pill.running { background: rgba(0,229,160,0.1); color: var(--green); border: 1px solid rgba(0,229,160,0.3); }
+
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .status-pill.running .dot { animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  .current-task-name {
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .current-task-name.active { color: var(--accent); }
+
+  .big-timer {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: clamp(48px, 10vw, 80px);
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 6px;
+    text-align: center;
+    margin-bottom: 24px;
+    text-shadow: 0 0 40px rgba(0,212,255,0.2);
+    transition: color 0.3s;
+  }
+  .big-timer.running { color: var(--accent); text-shadow: 0 0 40px rgba(0,212,255,0.4); }
+
+  /* INPUTS */
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .input-full { grid-column: 1 / -1; }
+
+  .field label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .field input, .field select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .field input:focus, .field select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+  }
+  .field select option { background: #141e2e; }
+
+  /* BUTTONS */
+  .btn-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .btn {
+    padding: 14px 20px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-start { background: linear-gradient(135deg, #00d4ff, #0099cc); color: #080c14; }
+  .btn-start:hover:not(:disabled) { box-shadow: 0 4px 20px rgba(0,212,255,0.4); transform: translateY(-1px); }
+  .btn-start:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
+
+  .btn-stop { background: linear-gradient(135deg, #ff4d6d, #cc2244); color: white; }
+  .btn-stop:hover:not(:disabled) { box-shadow: 0 4px 20px rgba(255,77,109,0.4); transform: translateY(-1px); }
+  .btn-stop:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
+
+  /* TABLE */
+  .table-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 1px;
+  }
+
+  .btn-export {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #00e5a0, #00a870);
+    color: #080c14;
+    border: none;
+    border-radius: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-export:hover { box-shadow: 0 4px 16px rgba(0,229,160,0.4); transform: translateY(-1px); }
+
+  .btn-clear {
+    padding: 8px 14px;
+    background: transparent;
+    color: var(--accent2);
+    border: 1px solid rgba(255,77,109,0.3);
+    border-radius: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 8px;
+  }
+  .btn-clear:hover { background: rgba(255,77,109,0.1); }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+
+  th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(30,45,66,0.5);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(14,21,32,0.8); }
+
+  .cat-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  .del-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .del-btn:hover { color: var(--accent2); background: rgba(255,77,109,0.1); }
+
+  /* ====================== */
+  /* TO-DO LIST SECTION     */
+  /* ====================== */
+
+  .todo-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .todo-date-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .todo-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .todo-progress-bar {
+    width: 120px;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 100px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .todo-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold2));
+    border-radius: 100px;
+    transition: width 0.4s ease;
+  }
+
+  .todo-progress-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .todo-add-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .todo-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .todo-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(255,215,0,0.08); }
+  .todo-input::placeholder { color: var(--muted); }
+
+  .todo-priority-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 120px;
+  }
+  .todo-priority-select:focus { border-color: var(--gold); }
+  .todo-priority-select option { background: #141e2e; }
+
+  .btn-add-todo {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: #080c14;
+    border: none;
+    border-radius: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-add-todo:hover { box-shadow: 0 4px 20px rgba(255,215,0,0.3); transform: translateY(-1px); }
+  .btn-add-todo:active { transform: scale(0.97); }
+
+  .todo-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .filter-btn {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+  .filter-btn.active { background: rgba(255,215,0,0.1); border-color: var(--gold); color: var(--gold); }
+  .filter-btn:hover:not(.active) { color: var(--text); border-color: var(--text); }
+
+  .todo-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .todo-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .todo-item:hover { border-color: rgba(255,215,0,0.2); }
+  .todo-item.done { opacity: 0.5; }
+  .todo-item.done .todo-text { text-decoration: line-through; color: var(--muted); }
+
+  .todo-checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    background: transparent;
+  }
+  .todo-checkbox:hover { border-color: var(--gold); }
+  .todo-checkbox.checked {
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    border-color: var(--gold);
+  }
+  .todo-checkbox.checked::after { content: '✓'; color: #080c14; font-size: 13px; font-weight: 700; }
+
+  .todo-text { flex: 1; font-size: 14px; color: var(--text); line-height: 1.4; }
+
+  .todo-priority-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .prio-high { background: var(--accent2); box-shadow: 0 0 6px rgba(255,77,109,0.5); }
+  .prio-medium { background: var(--gold); box-shadow: 0 0 6px rgba(255,215,0,0.4); }
+  .prio-low { background: var(--green); box-shadow: 0 0 6px rgba(0,229,160,0.3); }
+
+  .todo-prio-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-weight: 700;
+  }
+  .prio-label-high { background: rgba(255,77,109,0.12); color: var(--accent2); }
+  .prio-label-medium { background: rgba(255,215,0,0.1); color: var(--gold); }
+  .prio-label-low { background: rgba(0,229,160,0.1); color: var(--green); }
+
+  .todo-del {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .todo-del:hover { color: var(--accent2); background: rgba(255,77,109,0.1); }
+
+  .todo-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+  }
+  .todo-empty .icon { font-size: 36px; margin-bottom: 12px; }
+  .todo-empty p { font-size: 14px; }
+
+  /* ====================== */
+  /* HONOURS / BADGES       */
+  /* ====================== */
+
+  .honours-intro {
+    background: var(--surface);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background-image: radial-gradient(ellipse at 0% 50%, rgba(255,215,0,0.04) 0%, transparent 60%);
+  }
+
+  .honours-intro-icon { font-size: 32px; flex-shrink: 0; }
+
+  .honours-intro-text h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .honours-intro-text p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .streak-display {
+    margin-left: auto;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .streak-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(255,215,0,0.4);
+  }
+
+  .streak-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .streak-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-streak {
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-streak-inc {
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: #080c14;
+  }
+  .btn-streak-inc:hover { box-shadow: 0 4px 16px rgba(255,215,0,0.3); transform: translateY(-1px); }
+
+  .btn-streak-dec {
+    background: transparent;
+    border: 1px solid var(--border) !important;
+    color: var(--muted);
+  }
+  .btn-streak-dec:hover { color: var(--accent2); border-color: var(--accent2) !important; }
+
+  .btn-streak-reset {
+    background: transparent;
+    border: 1px solid rgba(255,77,109,0.3) !important;
+    color: var(--accent2);
+    margin-left: auto;
+    font-size: 11px;
+  }
+  .btn-streak-reset:hover { background: rgba(255,77,109,0.1); }
+
+  .next-badge-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .next-badge-info { flex: 1; }
+  .next-badge-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .next-badge-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .next-badge-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nbp-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 100px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .nbp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold2));
+    border-radius: 100px;
+    transition: width 0.5s ease;
+  }
+  .nbp-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+  .next-badge-icon { font-size: 32px; flex-shrink: 0; }
+
+  .badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  .badge-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .badge-card.unlocked {
+    border-color: rgba(255,215,0,0.35);
+    background-image: radial-gradient(ellipse at 0% 0%, rgba(255,215,0,0.05) 0%, transparent 60%);
+    box-shadow: 0 0 20px rgba(255,215,0,0.08);
+  }
+
+  .badge-card.locked {
+    opacity: 0.45;
+    filter: grayscale(0.5);
+  }
+
+  .badge-card.unlocked::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--gold2), transparent);
+  }
+
+  .badge-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+
+  .badge-art {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .badge-art svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+
+  .badge-art .badge-emoji {
+    position: relative;
+    z-index: 1;
+    font-size: 26px;
+    line-height: 1;
+  }
+
+  .badge-info { flex: 1; }
+
+  .badge-day-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .badge-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .badge-card.unlocked .badge-name { color: var(--gold); }
+
+  .badge-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .badge-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 100px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    width: fit-content;
+  }
+
+  .badge-status.unlocked-status {
+    background: rgba(255,215,0,0.12);
+    color: var(--gold);
+    border: 1px solid rgba(255,215,0,0.3);
+  }
+  .badge-status.locked-status {
+    background: rgba(74,96,128,0.15);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .input-row { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .btn-row { grid-template-columns: 1fr; }
+    .big-timer { font-size: 48px; }
+    .todo-add-row { flex-direction: column; }
+    .badges-grid { grid-template-columns: 1fr; }
+    .honours-intro { flex-direction: column; text-align: center; }
+    .streak-display { margin-left: 0; }
+  }
+</style>
+</head>
+<body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;" oncopy="return false;" oncut="return false;">
+
+<div class="toast" id="toast"></div>
+
+<div class="app">
+  <div class="header">
+    <div class="logo-wrap">
+      <div class="logo">HERCU<span>LIST</span></div>
+      <div class="logo-sub">Track · Plan · Conquer</div>
+    </div>
+    <div class="header-date" id="headerDate"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-val accent" id="statTasks">0</div>
+      <div class="stat-label">Tasks Today</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val green" id="statHours">0.00</div>
+      <div class="stat-label">Hours Today</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="statTotal">0</div>
+      <div class="stat-label">Total Tracked</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val gold" id="statStreak">0</div>
+      <div class="stat-label">Day Streak 🔥</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('timer')">⏱ Timer</button>
+    <button class="tab-btn" onclick="switchTab('todo')">📋 Today's Tasks</button>
+    <button class="tab-btn" onclick="switchTab('honours')">⚔️ Honours</button>
+  </div>
+
+  <!-- TAB: TIMER -->
+  <div class="tab-content active" id="tab-timer">
+    <div class="timer-card" id="timerCard">
+      <div class="timer-top">
+        <div class="status-pill idle" id="statusPill">
+          <div class="dot"></div>
+          <span id="statusText">IDLE</span>
+        </div>
+        <div class="current-task-name" id="currentTaskLabel">Koi task nahi chal raha</div>
+      </div>
+      <div class="big-timer" id="bigTimer">00:00:00</div>
+      <div class="input-row">
+        <div class="field input-full">
+          <label>Task Name *</label>
+          <input type="text" id="taskName" placeholder="Kya kar rahe ho? (e.g. Homepage design)" />
+        </div>
+      </div>
+      <div class="input-row">
+        <div class="field">
+          <label>Category</label>
+          <select id="category">
+            <option value="💻 Development">💻 Development</option>
+            <option value="🎨 Design">🎨 Design</option>
+            <option value="📞 Meeting">📞 Meeting</option>
+            <option value="🔍 Research">🔍 Research</option>
+            <option value="🧪 Testing">🧪 Testing</option>
+            <option value="📝 Documentation">📝 Documentation</option>
+            <option value="👀 Review">👀 Review</option>
+            <option value="📌 Other">📌 Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Notes (optional)</label>
+          <input type="text" id="notes" placeholder="Kuch extra info..." />
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-start" id="startBtn" onclick="startTask()">▶ &nbsp;START TASK</button>
+        <button class="btn btn-stop" id="stopBtn" onclick="stopTask()">⏹ &nbsp;STOP TASK</button>
+      </div>
+    </div>
+
+    <!-- TASK LOG TABLE -->
+    <div class="table-section">
+      <div class="table-header">
+        <div class="table-title">📋 TASK LOG</div>
+        <div style="display:flex;align-items:center;gap:0">
+          <button class="btn-export" onclick="exportExcel()">⬇ EXCEL DOWNLOAD</button>
+          <button class="btn-clear" onclick="clearAll()">🗑 Clear</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="taskTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Task</th>
+              <th>Category</th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Duration</th>
+              <th>Date</th>
+              <th>Notes</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="9">
+              <div class="empty-state">
+                <div class="icon">⏱</div>
+                <p>Abhi tak koi task track nahi kiya.<br>Upar se task shuru karo!</p>
+              </div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: TO-DO -->
+  <div class="tab-content" id="tab-todo">
+    <div class="todo-header-bar">
+      <div class="todo-date-label" id="todoDateLabel"></div>
+      <div class="todo-progress-wrap">
+        <div class="todo-progress-bar">
+          <div class="todo-progress-fill" id="todoProgressFill" style="width:0%"></div>
+        </div>
+        <div class="todo-progress-text" id="todoProgressText">0/0</div>
+      </div>
+    </div>
+
+    <div class="todo-add-row">
+      <input type="text" class="todo-input" id="todoInput" placeholder="Aaj kya karna hai? (Enter daba ke add karo)" onkeydown="if(event.key==='Enter')addTodo()" />
+      <select class="todo-priority-select" id="todoPriority">
+        <option value="high">🔴 High</option>
+        <option value="medium" selected>🟡 Medium</option>
+        <option value="low">🟢 Low</option>
+      </select>
+      <button class="btn-add-todo" onclick="addTodo()">+ ADD TASK</button>
+    </div>
+
+    <div class="todo-filters">
+      <button class="filter-btn active" onclick="setTodoFilter('all', this)">All</button>
+      <button class="filter-btn" onclick="setTodoFilter('pending', this)">Pending</button>
+      <button class="filter-btn" onclick="setTodoFilter('done', this)">Completed</button>
+      <button class="filter-btn" onclick="setTodoFilter('high', this)">🔴 High</button>
+    </div>
+
+    <div class="todo-list" id="todoList"></div>
+  </div>
+
+  <!-- TAB: HONOURS -->
+  <div class="tab-content" id="tab-honours">
+
+    <div class="honours-intro">
+      <div class="honours-intro-icon">🏛️</div>
+      <div class="honours-intro-text">
+        <h3>The Hall of Olympians</h3>
+        <p>Har din ek ritual hai. Apna streak badhaate raho — aur cult ke pantheon mein apni jagah pakki karo. Badges unlock honge as your streak grows.</p>
+      </div>
+      <div class="streak-display">
+        <div class="streak-num" id="honoursStreakNum">0</div>
+        <div class="streak-label">Day Streak</div>
+      </div>
+    </div>
+
+    <div class="streak-controls">
+      <button class="btn-streak btn-streak-inc" onclick="changeStreak(1)">🔥 +1 Day Complete</button>
+      <button class="btn-streak btn-streak-dec" onclick="changeStreak(-1)">↩ Undo</button>
+      <button class="btn-streak btn-streak-reset" onclick="resetStreak()">⚠ Reset Streak</button>
+    </div>
+
+    <div class="next-badge-bar" id="nextBadgeBar">
+      <div class="next-badge-icon" id="nextBadgeIcon">🎯</div>
+      <div class="next-badge-info">
+        <div class="next-badge-label">Next Badge</div>
+        <div class="next-badge-name" id="nextBadgeName">Loading...</div>
+        <div class="next-badge-progress">
+          <div class="nbp-bar"><div class="nbp-fill" id="nbpFill" style="width:0%"></div></div>
+          <div class="nbp-text" id="nbpText">0 / 1</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="badges-grid" id="badgesGrid"></div>
+  </div>
+
+</div>
+
+<script>
+  /* ============ DATA ============ */
+  let tasks = JSON.parse(localStorage.getItem('timesheetTasks') || '[]');
+  let timerInterval = null;
+  let startTime = null;
+  let isRunning = false;
+  let activeTask = JSON.parse(localStorage.getItem('activeTask') || 'null');
+  let todos = JSON.parse(localStorage.getItem('herculist_todos') || '[]');
+  let streak = parseInt(localStorage.getItem('herculist_streak') || '0');
+  let todoFilter = 'all';
+
+  const CAT_COLORS = {
+    '💻 Development': { bg: 'rgba(0,212,255,0.12)', color: '#00d4ff' },
+    '🎨 Design':      { bg: 'rgba(255,150,255,0.12)', color: '#ff96ff' },
+    '📞 Meeting':     { bg: 'rgba(255,200,0,0.12)', color: '#ffc800' },
+    '🔍 Research':    { bg: 'rgba(0,229,160,0.12)', color: '#00e5a0' },
+    '🧪 Testing':     { bg: 'rgba(255,120,50,0.12)', color: '#ff7832' },
+    '📝 Documentation':{ bg: 'rgba(100,180,255,0.12)', color: '#64b4ff' },
+    '👀 Review':      { bg: 'rgba(200,120,255,0.12)', color: '#c878ff' },
+    '📌 Other':       { bg: 'rgba(150,150,150,0.12)', color: '#aaaaaa' },
+  };
+
+  /* ============ BADGES ============ */
+  const BADGES = [
+    {
+      day: 1, emoji: '🔥', name: 'Initiate of Fire',
+      desc: 'Pehla ritual, journey ka aarambh.',
+      artBg: 'linear-gradient(135deg, #ff4500, #ff6b00)',
+      artSvg: `<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="rgba(255,69,0,0.15)" stroke="rgba(255,69,0,0.4)" stroke-width="1"/><circle cx="30" cy="30" r="18" fill="rgba(255,107,0,0.1)" stroke="rgba(255,107,0,0.3)" stroke-width="1"/></svg>`
+    },
+    {
+      day: 3, emoji: '⚔️', name: 'Novice of Will',
+      desc: 'Discipline ka pehla test pass.',
+      artBg: 'linear-gradient(135deg, #4a90d9, #6ab0ff)',
+      artSvg: `<svg viewBox="0 0 60 60"><polygon points="30,4 56,56 4,56" fill="none" stroke="rgba(74,144,217,0.5)" stroke-width="1.5"/><polygon points="30,14 48,50 12,50" fill="rgba(74,144,217,0.1)" stroke="rgba(74,144,217,0.3)" stroke-width="1"/></svg>`
+    },
+    {
+      day: 5, emoji: '🛡️', name: 'Acolyte of Steel',
+      desc: 'Temptations ke against warrior stance.',
+      artBg: 'linear-gradient(135deg, #708090, #a8c0d0)',
+      artSvg: `<svg viewBox="0 0 60 60"><rect x="10" y="8" width="40" height="44" rx="20" ry="4" fill="rgba(160,196,208,0.1)" stroke="rgba(160,196,208,0.4)" stroke-width="1.5"/><rect x="18" y="16" width="24" height="28" rx="12" ry="2" fill="rgba(160,196,208,0.06)" stroke="rgba(160,196,208,0.2)" stroke-width="1"/></svg>`
+    },
+    {
+      day: 7, emoji: '⏳', name: 'Disciple of Chronos',
+      desc: 'Time ke god ka pehla blessing.',
+      artBg: 'linear-gradient(135deg, #9b59b6, #c39bd3)',
+      artSvg: `<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="none" stroke="rgba(155,89,182,0.4)" stroke-width="1.5"/><circle cx="30" cy="30" r="18" fill="rgba(155,89,182,0.08)" stroke="rgba(155,89,182,0.25)" stroke-width="1"/><line x1="30" y1="30" x2="30" y2="14" stroke="rgba(195,155,211,0.6)" stroke-width="2" stroke-linecap="round"/><line x1="30" y1="30" x2="42" y2="36" stroke="rgba(195,155,211,0.4)" stroke-width="1.5" stroke-linecap="round"/></svg>`
+    },
+    {
+      day: 14, emoji: '🕯️', name: 'Keeper of Resolve',
+      desc: 'Do hafte ka cultish commitment.',
+      artBg: 'linear-gradient(135deg, #d4a017, #f0c040)',
+      artSvg: `<svg viewBox="0 0 60 60"><ellipse cx="30" cy="42" rx="14" ry="6" fill="rgba(212,160,23,0.1)" stroke="rgba(212,160,23,0.3)" stroke-width="1"/><rect x="24" y="20" width="12" height="22" rx="2" fill="rgba(212,160,23,0.12)" stroke="rgba(212,160,23,0.35)" stroke-width="1"/><ellipse cx="30" cy="18" rx="5" ry="6" fill="rgba(240,192,64,0.2)" stroke="rgba(240,192,64,0.5)" stroke-width="1"/></svg>`
+    },
+    {
+      day: 30, emoji: '⚡', name: 'Spartan Adept',
+      desc: 'Warrior discipline, ek mahina ka mastery.',
+      artBg: 'linear-gradient(135deg, #f1c40f, #f39c12)',
+      artSvg: `<svg viewBox="0 0 60 60"><polygon points="30,4 36,24 58,24 42,38 48,58 30,46 12,58 18,38 2,24 24,24" fill="rgba(241,196,15,0.1)" stroke="rgba(241,196,15,0.4)" stroke-width="1.5"/></svg>`
+    },
+    {
+      day: 60, emoji: '🛡️', name: 'Knight of Aegis',
+      desc: 'Shield of Zeus, temptations se protection.',
+      artBg: 'linear-gradient(135deg, #1a5276, #2980b9)',
+      artSvg: `<svg viewBox="0 0 60 60"><path d="M30,4 L52,14 L52,36 C52,48 30,58 30,58 C30,58 8,48 8,36 L8,14 Z" fill="rgba(41,128,185,0.12)" stroke="rgba(41,128,185,0.5)" stroke-width="1.5"/><path d="M30,12 L46,20 L46,36 C46,44 30,52 30,52 C30,52 14,44 14,36 L14,20 Z" fill="rgba(41,128,185,0.06)" stroke="rgba(41,128,185,0.25)" stroke-width="1"/></svg>`
+    },
+    {
+      day: 90, emoji: '🌌', name: 'Titan of Flow',
+      desc: 'Ninety days = titan-level aura.',
+      artBg: 'linear-gradient(135deg, #0d0d2b, #1a1a5e)',
+      artSvg: `<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="none" stroke="rgba(100,100,255,0.3)" stroke-width="1"/><circle cx="30" cy="30" r="20" fill="rgba(60,60,200,0.06)" stroke="rgba(100,100,255,0.2)" stroke-width="1"/><circle cx="30" cy="30" r="3" fill="rgba(150,150,255,0.8)"/><circle cx="20" cy="18" r="1.5" fill="rgba(200,200,255,0.6)"/><circle cx="42" cy="24" r="1" fill="rgba(200,200,255,0.5)"/><circle cx="16" cy="38" r="1" fill="rgba(200,200,255,0.4)"/><circle cx="44" cy="42" r="1.5" fill="rgba(200,200,255,0.6)"/></svg>`
+    },
+    {
+      day: 120, emoji: '🔱', name: 'Oracle of Strength',
+      desc: 'Wisdom + foresight, cult recognition.',
+      artBg: 'linear-gradient(135deg, #16a085, #1abc9c)',
+      artSvg: `<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="rgba(26,188,156,0.08)" stroke="rgba(26,188,156,0.35)" stroke-width="1.5"/><line x1="30" y1="10" x2="30" y2="50" stroke="rgba(26,188,156,0.5)" stroke-width="2"/><line x1="18" y1="22" x2="30" y2="10" stroke="rgba(26,188,156,0.5)" stroke-width="2"/><line x1="42" y1="22" x2="30" y2="10" stroke="rgba(26,188,156,0.5)" stroke-width="2"/></svg>`
+    },
+    {
+      day: 150, emoji: '👑', name: 'Dominion Bearer',
+      desc: 'Apne schedule aur urges pe full dominance.',
+      artBg: 'linear-gradient(135deg, #b7950b, #ffd700)',
+      artSvg: `<svg viewBox="0 0 60 60"><path d="M8,40 L14,18 L30,32 L46,18 L52,40 Z" fill="rgba(255,215,0,0.1)" stroke="rgba(255,215,0,0.45)" stroke-width="1.5"/><rect x="10" y="40" width="40" height="8" rx="2" fill="rgba(255,215,0,0.08)" stroke="rgba(255,215,0,0.3)" stroke-width="1"/><circle cx="14" cy="18" r="3" fill="rgba(255,215,0,0.3)" stroke="rgba(255,215,0,0.6)" stroke-width="1"/><circle cx="30" cy="32" r="3" fill="rgba(255,215,0,0.3)" stroke="rgba(255,215,0,0.6)" stroke-width="1"/><circle cx="46" cy="18" r="3" fill="rgba(255,215,0,0.3)" stroke="rgba(255,215,0,0.6)" stroke-width="1"/></svg>`
+    },
+    {
+      day: 180, emoji: '🌍', name: 'Atlas Ascendant',
+      desc: 'Titan jo duniya uthata hai, tum apne streak uthate ho.',
+      artBg: 'linear-gradient(135deg, #145a32, #1e8449)',
+      artSvg: `<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="rgba(30,132,73,0.1)" stroke="rgba(30,132,73,0.4)" stroke-width="1.5"/><ellipse cx="30" cy="30" rx="24" ry="10" fill="none" stroke="rgba(30,132,73,0.25)" stroke-width="1"/><line x1="6" y1="30" x2="54" y2="30" stroke="rgba(30,132,73,0.2)" stroke-width="1"/><line x1="30" y1="6" x2="30" y2="54" stroke="rgba(30,132,73,0.2)" stroke-width="1"/></svg>`
+    },
+    {
+      day: 360, emoji: '✨', name: 'Olympian Eternal',
+      desc: 'Ek saal ka god-level mastery, cult ke pantheon mein entry.',
+      artBg: 'linear-gradient(135deg, #4a0080, #9b59b6)',
+      artSvg: `<svg viewBox="0 0 60 60"><polygon points="30,4 34,22 54,22 38,34 44,52 30,42 16,52 22,34 6,22 26,22" fill="rgba(155,89,182,0.12)" stroke="rgba(155,89,182,0.5)" stroke-width="1.5"/><circle cx="30" cy="30" r="8" fill="rgba(212,175,55,0.15)" stroke="rgba(212,175,55,0.5)" stroke-width="1.5"/><circle cx="30" cy="30" r="3" fill="rgba(255,215,0,0.6)"/></svg>`
+    },
+  ];
+
+  /* ============ INIT ============ */
+  updateHeader();
+  renderTable();
+  updateStats();
+  renderTodos();
+  renderBadges();
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('stopBtn').disabled = true;
+
+  if (activeTask) {
+    startTime = activeTask.startTime;
+    isRunning = true;
+    document.getElementById('taskName').value = activeTask.taskName;
+    document.getElementById('category').value = activeTask.category;
+    document.getElementById('notes').value = activeTask.notes || '';
+    setRunningUI(true, activeTask.taskName);
+    timerInterval = setInterval(tickTimer, 1000);
+  }
+
+  /* ============ TABS ============ */
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    event.target.classList.add('active');
+    if (tab === 'todo') renderTodos();
+    if (tab === 'honours') renderBadges();
+  }
+
+  /* ============ TIMER ============ */
+  function updateHeader() {
+    const now = new Date();
+    const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('headerDate').innerHTML =
+      now.toLocaleDateString('en-US', opts) + '<br>' +
+      now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    setTimeout(updateHeader, 30000);
+  }
+
+  function tickTimer() {
+    if (!startTime) return;
+    const elapsed = Math.floor((Date.now() - new Date(startTime).getTime()) / 1000);
+    const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+    const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+    const s = String(elapsed % 60).padStart(2, '0');
+    document.getElementById('bigTimer').textContent = h + ':' + m + ':' + s;
+  }
+
+  function setRunningUI(running, taskName) {
+    const pill = document.getElementById('statusPill');
+    const txt = document.getElementById('statusText');
+    const label = document.getElementById('currentTaskLabel');
+    const timer = document.getElementById('bigTimer');
+    const card = document.getElementById('timerCard');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    if (running) {
+      pill.className = 'status-pill running'; txt.textContent = 'RUNNING';
+      label.textContent = taskName; label.className = 'current-task-name active';
+      timer.className = 'big-timer running'; card.className = 'timer-card running';
+      startBtn.disabled = true; stopBtn.disabled = false;
+    } else {
+      pill.className = 'status-pill idle'; txt.textContent = 'IDLE';
+      label.textContent = 'Koi task nahi chal raha'; label.className = 'current-task-name';
+      timer.className = 'big-timer'; timer.textContent = '00:00:00';
+      card.className = 'timer-card'; startBtn.disabled = false; stopBtn.disabled = true;
+    }
+  }
+
+  function startTask() {
+    const taskName = document.getElementById('taskName').value.trim();
+    if (!taskName) { showToast('Task name likhna zaroori hai! ✍️', 'error'); return; }
+    if (isRunning) { showToast('Ek task pehle se chal raha hai!', 'error'); return; }
+    const category = document.getElementById('category').value;
+    const notes = document.getElementById('notes').value.trim();
+    startTime = new Date().toISOString();
+    isRunning = true;
+    activeTask = { taskName, category, notes, startTime };
+    localStorage.setItem('activeTask', JSON.stringify(activeTask));
+    setRunningUI(true, taskName);
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(tickTimer, 1000);
+    showToast('✅ Task started!', 'success');
+  }
+
+  function stopTask() {
+    if (!isRunning) { showToast('No task is running!', 'error'); return; }
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    isRunning = false;
+    const endTime = new Date();
+    const startDate = new Date(startTime);
+    const durationMs = endTime - startDate;
+    const durationSec = Math.max(0, Math.round(durationMs / 1000));
+    const durationMin = Math.round(durationSec / 60);
+    const fmtTime = d => d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const fmtDate = d => d.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const hrs = Math.floor(durationSec / 3600);
+    const mins = Math.floor((durationSec % 3600) / 60);
+    const secs = durationSec % 60;
+    const durLabel = hrs > 0 ? `${hrs}h ${mins}m` : mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+    const savedActiveTask = activeTask || { taskName: 'Unknown', category: '📌 Other', notes: '' };
+    const task = {
+      id: Date.now(), taskName: savedActiveTask.taskName, category: savedActiveTask.category,
+      startTime: fmtTime(startDate), endTime: fmtTime(endTime), durationMin,
+      durationLabel: durLabel, durationHrs: (durationMin / 60).toFixed(2),
+      date: fmtDate(endTime), dateObj: endTime.toLocaleDateString('en-US'),
+      notes: savedActiveTask.notes
+    };
+    tasks.unshift(task);
+    localStorage.setItem('timesheetTasks', JSON.stringify(tasks));
+    localStorage.removeItem('activeTask');
+    activeTask = null; startTime = null;
+    setRunningUI(false);
+    document.getElementById('taskName').value = '';
+    document.getElementById('notes').value = '';
+    renderTable(); updateStats();
+    showToast(`⏹ Done! ${task.taskName} — ${durLabel}`, 'success');
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    if (tasks.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="icon">⏱</div><p>Abhi tak koi task track nahi kiya.<br>Upar se task shuru karo!</p></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = tasks.map((t, i) => {
+      const c = CAT_COLORS[t.category] || CAT_COLORS['📌 Other'];
+      return `<tr>
+        <td style="color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11px">${tasks.length - i}</td>
+        <td style="font-weight:500;color:var(--white);max-width:180px;overflow:hidden;text-overflow:ellipsis">${escHtml(t.taskName)}</td>
+        <td><span class="cat-badge" style="background:${c.bg};color:${c.color}">${escHtml(t.category)}</span></td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">${t.startTime}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted)">${t.endTime}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--green);font-weight:600">${t.durationLabel}</td>
+        <td style="font-size:12px;color:var(--muted)">${t.date}</td>
+        <td style="font-size:12px;color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis">${escHtml(t.notes || '—')}</td>
+        <td><button class="del-btn" onclick="deleteTask(${t.id})" title="Delete">✕</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function updateStats() {
+    const today = new Date().toLocaleDateString('en-US');
+    const todayTasks = tasks.filter(t => t.dateObj === today);
+    const todayMin = todayTasks.reduce((s, t) => s + (t.durationMin || 0), 0);
+    document.getElementById('statTasks').textContent = todayTasks.length;
+    document.getElementById('statHours').textContent = (todayMin / 60).toFixed(2);
+    document.getElementById('statTotal').textContent = tasks.length;
+    document.getElementById('statStreak').textContent = streak;
+  }
+
+  function deleteTask(id) {
+    tasks = tasks.filter(t => t.id !== id);
+    localStorage.setItem('timesheetTasks', JSON.stringify(tasks));
+    renderTable(); updateStats();
+    showToast('Task delete ho gaya', 'error');
+  }
+
+  function clearAll() {
+    if (!confirm('Saara data delete karna chahte ho? Pehle Excel download kar lo!')) return;
+    tasks = [];
+    localStorage.setItem('timesheetTasks', JSON.stringify(tasks));
+    renderTable(); updateStats();
+    showToast('Saara data clear ho gaya', 'error');
+  }
+
+  function exportExcel() {
+    if (tasks.length === 0) { showToast('Koi data nahi hai export karne ke liye!', 'error'); return; }
+    const wsData = [['#', 'Task Name', 'Category', 'Start Time', 'End Time', 'Duration', 'Duration (hrs)', 'Date', 'Notes']];
+    tasks.forEach((t, i) => wsData.push([tasks.length-i, t.taskName, t.category.replace(/[^\w\s]/gi,'').trim(), t.startTime, t.endTime, t.durationLabel, parseFloat(t.durationHrs), t.date, t.notes||'']));
+    const catMap = {};
+    tasks.forEach(t => { const cat = t.category.replace(/[^\w\s]/gi,'').trim(); catMap[cat] = (catMap[cat]||0) + (t.durationMin||0); });
+    const summaryData = [['Category','Total Minutes','Total Hours']];
+    Object.entries(catMap).sort((a,b)=>b[1]-a[1]).forEach(([cat,min]) => summaryData.push([cat,min,(min/60).toFixed(2)]));
+    const totalMin = tasks.reduce((s,t)=>s+(t.durationMin||0),0);
+    summaryData.push(['','',''],['TOTAL',totalMin,(totalMin/60).toFixed(2)]);
+    const wb = XLSX.utils.book_new();
+    const ws1 = XLSX.utils.aoa_to_sheet(wsData);
+    const ws2 = XLSX.utils.aoa_to_sheet(summaryData);
+    ws1['!cols'] = [{wch:4},{wch:25},{wch:16},{wch:12},{wch:12},{wch:12},{wch:14},{wch:12},{wch:25}];
+    ws2['!cols'] = [{wch:20},{wch:16},{wch:14}];
+    XLSX.utils.book_append_sheet(wb, ws1, 'Task Log');
+    XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+    const today = new Date().toLocaleDateString('en-GB').replace(/\//g,'-');
+    XLSX.writeFile(wb, `HercuList_${today}.xlsx`);
+    showToast('✅ Excel download ho gayi!', 'success');
+  }
+
+  /* ============ TO-DO ============ */
+  function addTodo() {
+    const input = document.getElementById('todoInput');
+    const text = input.value.trim();
+    if (!text) { showToast('Kuch toh likhna padega! ✍️', 'error'); return; }
+    const priority = document.getElementById('todoPriority').value;
+    const todo = { id: Date.now(), text, priority, done: false, date: new Date().toLocaleDateString('en-US') };
+    todos.unshift(todo);
+    localStorage.setItem('herculist_todos', JSON.stringify(todos));
+    input.value = '';
+    renderTodos();
+    showToast('✅ Task add ho gayi!', 'success');
+  }
+
+  function toggleTodo(id) {
+    const todo = todos.find(t => t.id === id);
+    if (!todo) return;
+    todo.done = !todo.done;
+    localStorage.setItem('herculist_todos', JSON.stringify(todos));
+    renderTodos();
+    if (todo.done) showToast('🎉 Task complete! Chalo badho!', 'success');
+  }
+
+  function deleteTodo(id) {
+    todos = todos.filter(t => t.id !== id);
+    localStorage.setItem('herculist_todos', JSON.stringify(todos));
+    renderTodos();
+  }
+
+  function setTodoFilter(f, el) {
+    todoFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    renderTodos();
+  }
+
+  function renderTodos() {
+    const today = new Date().toLocaleDateString('en-US');
+    const todayTodos = todos.filter(t => t.date === today);
+    const done = todayTodos.filter(t => t.done).length;
+    const total = todayTodos.length;
+    const pct = total > 0 ? Math.round((done/total)*100) : 0;
+    document.getElementById('todoProgressFill').style.width = pct + '%';
+    document.getElementById('todoProgressText').textContent = `${done}/${total}`;
+
+    const now = new Date();
+    document.getElementById('todoDateLabel').textContent =
+      now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+    let filtered = todayTodos;
+    if (todoFilter === 'pending') filtered = todayTodos.filter(t => !t.done);
+    else if (todoFilter === 'done') filtered = todayTodos.filter(t => t.done);
+    else if (todoFilter === 'high') filtered = todayTodos.filter(t => t.priority === 'high');
+
+    const list = document.getElementById('todoList');
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="todo-empty"><div class="icon">${todoFilter === 'done' ? '🎯' : '📭'}</div><p>${todoFilter === 'done' ? 'Abhi tak kuch complete nahi kiya. Chalo shuru karo!' : 'Koi task nahi hai. Kuch add karo!'}</p></div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(t => {
+      const prioClass = t.priority === 'high' ? 'prio-high' : t.priority === 'medium' ? 'prio-medium' : 'prio-low';
+      const prioLabelClass = t.priority === 'high' ? 'prio-label-high' : t.priority === 'medium' ? 'prio-label-medium' : 'prio-label-low';
+      const prioLabel = t.priority === 'high' ? 'HIGH' : t.priority === 'medium' ? 'MED' : 'LOW';
+      return `<div class="todo-item ${t.done ? 'done' : ''}">
+        <div class="todo-checkbox ${t.done ? 'checked' : ''}" onclick="toggleTodo(${t.id})"></div>
+        <div class="todo-priority-dot ${prioClass}"></div>
+        <div class="todo-text">${escHtml(t.text)}</div>
+        <span class="todo-prio-label ${prioLabelClass}">${prioLabel}</span>
+        <button class="todo-del" onclick="deleteTodo(${t.id})">✕</button>
+      </div>`;
+    }).join('');
+  }
+
+  /* ============ HONOURS / BADGES ============ */
+  function changeStreak(delta) {
+    streak = Math.max(0, streak + delta);
+    localStorage.setItem('herculist_streak', streak);
+    document.getElementById('statStreak').textContent = streak;
+    const prev = streak - delta;
+    const newBadge = BADGES.filter(b => b.day <= streak && b.day > prev);
+    if (newBadge.length > 0 && delta > 0) {
+      newBadge.forEach(b => {
+        setTimeout(() => showToast(`🏅 Badge Unlocked: ${b.emoji} ${b.name}!`, 'badge'), 300);
+      });
+    }
+    renderBadges();
+  }
+
+  function resetStreak() {
+    if (!confirm('Streak reset karna chahte ho? Yeh action undo nahi hoga!')) return;
+    streak = 0;
+    localStorage.setItem('herculist_streak', streak);
+    document.getElementById('statStreak').textContent = streak;
+    renderBadges(); updateStats();
+    showToast('Streak reset ho gayi. Naya aarambh! 🔥', 'error');
+  }
+
+  function renderBadges() {
+    document.getElementById('honoursStreakNum').textContent = streak;
+
+    // Next badge
+    const nextBadge = BADGES.find(b => b.day > streak);
+    const prevDay = nextBadge ? (BADGES[BADGES.indexOf(nextBadge) - 1]?.day || 0) : null;
+    if (nextBadge) {
+      const range = nextBadge.day - (prevDay || 0);
+      const progress = streak - (prevDay || 0);
+      const pct = Math.min(100, Math.round((progress / range) * 100));
+      document.getElementById('nextBadgeIcon').textContent = nextBadge.emoji;
+      document.getElementById('nextBadgeName').textContent = `${nextBadge.name} — Day ${nextBadge.day}`;
+      document.getElementById('nbpFill').style.width = pct + '%';
+      document.getElementById('nbpText').textContent = `${streak} / ${nextBadge.day} days`;
+      document.getElementById('nextBadgeBar').style.display = 'flex';
+    } else {
+      document.getElementById('nextBadgeBar').style.display = 'none';
+    }
+
+    // Badge grid
+    document.getElementById('badgesGrid').innerHTML = BADGES.map(b => {
+      const unlocked = streak >= b.day;
+      return `<div class="badge-card ${unlocked ? 'unlocked' : 'locked'}">
+        <div class="badge-top">
+          <div class="badge-art" style="background:${unlocked ? b.artBg : 'var(--surface2)'}">
+            ${b.artSvg}
+            <span class="badge-emoji">${unlocked ? b.emoji : '🔒'}</span>
+          </div>
+          <div class="badge-info">
+            <div class="badge-day-label">Day ${b.day} ${unlocked ? '· UNLOCKED' : ''}</div>
+            <div class="badge-name">${b.name}</div>
+            <div class="badge-desc">${b.desc}</div>
+          </div>
+        </div>
+        <div class="badge-status ${unlocked ? 'unlocked-status' : 'locked-status'}">
+          ${unlocked ? '✦ Achieved' : `🔒 ${b.day - streak} days remaining`}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ============ UTILS ============ */
+  function escHtml(str) {
+    return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type + ' show';
+    setTimeout(() => t.className = 'toast', type === 'badge' ? 4500 : 3500);
+  }
+</script>
+</body>
+</html>
